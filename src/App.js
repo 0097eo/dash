@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, NavLink } from 'react-router-dom';
-import { Menu, TrendingUp, Settings, X, User} from 'lucide-react';
+import { Menu, TrendingUp, Settings, X, User, LogOut } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import Reports from './components/Reports';
 import SettingsPage from './components/Settings';
@@ -29,6 +29,7 @@ const App = () => {
     </li>
   );
 
+
   return (
     <Router>
       <div className="flex flex-col h-screen bg-gray-100 md:flex-row">
@@ -44,19 +45,26 @@ const App = () => {
         <aside
           className={`${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 transition-transform duration-300 ease-in-out fixed md:static inset-y-0 left-0 z-10 w-64 bg-gray-800 text-white p-6 overflow-y-auto`}
+          } md:translate-x-0 transition-transform duration-300 ease-in-out fixed md:static inset-y-0 left-0 z-10 w-64 bg-gray-800 text-white p-6 overflow-y-auto flex flex-col`}
         >
           <div className="flex items-center space-x-2 mb-8">
-              <User size={32} />
-              <h1 className="text-2xl font-bold">Emmanuel</h1>
+            <User size={32} />
+            <h1 className="text-2xl font-bold">Emmanuel</h1>
           </div>
-          <nav>
+          <nav className="flex-grow">
             <ul className="space-y-2">
               <NavItem to="/" icon={Menu}>Dashboard</NavItem>
               <NavItem to="/reports" icon={TrendingUp}>Reports</NavItem>
               <NavItem to="/settings" icon={Settings}>Settings</NavItem>
             </ul>
           </nav>
+          {/* Logout Button */}
+          <button
+            className="mt-auto flex items-center space-x-2 p-2 rounded hover:bg-gray-700 w-full"
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
         </aside>
 
         {/* Main Content */}
