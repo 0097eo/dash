@@ -1,6 +1,6 @@
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Banknote, Users, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { Banknote, Users, Activity, RefreshCw } from 'lucide-react';
 
 // data generation
 const generateDummyData = () => {
@@ -24,13 +24,55 @@ const generateTransactions = () => {
   return transactions;
 };
 
+// Generate product category data for pie chart
+const generateProductCategoryData = () => {
+  return [
+    { name: '电子产品', value: 40 },
+    { name: '服装', value: 30 },
+    { name: '书籍', value: 20 },
+    { name: '其他', value: 10 },
+  ];
+};
+
+// Generate random product category data
+const generateRandomProductCategoryData = () => {
+  const categories = ['电子产品', '服装', '书籍', '其他'];
+  const data = [];
+  let remaining = 100;
+  
+  for (let i = 0; i < categories.length - 1; i++) {
+    const value = Math.floor(Math.random() * remaining) + 1;
+    data.push({ name: categories[i], value });
+    remaining -= value;
+  }
+  
+  data.push({ name: categories[categories.length - 1], value: remaining });
+  return data;
+};
+
 const Dashboard = () => {
   const chartData = generateDummyData();
   const transactions = generateTransactions();
+  const [productCategoryData, setProductCategoryData] = useState(generateProductCategoryData());
+  
+  // Colors for the pie chart
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
   // Calculate average monthly revenue
   const totalSales = chartData.reduce((sum, data) => sum + data.sales, 0);
   const averageMonthlyRevenue = Math.round(totalSales / chartData.length);
+  
+  // Handle pie chart click event
+  const handlePieClick = (data) => {
+    const totalAmount = 10000000; // Assuming total sales is 10,000,000 KSh
+    const categoryAmount = (data.value / 100) * totalAmount;
+    alert(`${data.name}销售额占比 ${data.value}%，金额 ${categoryAmount.toLocaleString()} KSh`);
+  };
+  
+  // Handle refresh data button click
+  const handleRefreshData = () => {
+    setProductCategoryData(generateRandomProductCategoryData());
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -74,6 +116,44 @@ const Dashboard = () => {
                 <Tooltip formatter={(value) => `KSh ${value.toLocaleString()}`} />
                 <Bar dataKey="sales" fill="#8884d8" />
               </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Product Category Chart */}
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg md:text-xl font-semibold">Product Category Distribution</h3>
+            <button 
+              onClick={handleRefreshData}
+              className="flex items-center gap-2 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            >
+              <RefreshCw size={16} />
+              刷新数据
+            </button>
+          </div>
+          <div className="h-64 md:h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={productCategoryData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  innerRadius={40}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  onClick={handlePieClick}
+                >
+                  {productCategoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => `${value}%`} />
+                <Legend />
+              </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
