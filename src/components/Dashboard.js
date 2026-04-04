@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Banknote, Users, Activity } from 'lucide-react';
 
 // data generation
@@ -10,6 +10,15 @@ const generateDummyData = () => {
     sales: Math.floor(Math.random() * 1000000) + 500000,
   }));
 };
+
+const productCategoryData = [
+  { name: '电子产品', value: 400, percentage: 40 },
+  { name: '服装', value: 300, percentage: 30 },
+  { name: '书籍', value: 200, percentage: 20 },
+  { name: '其他', value: 100, percentage: 10 },
+];
+
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042'];
 
 const generateTransactions = () => {
   const transactions = [];
@@ -62,19 +71,53 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Chart */}
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow mb-8">
-          <h3 className="text-lg md:text-xl font-semibold mb-4">Sales Trend</h3>
-          <div className="h-64 md:h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(value) => `KSh ${value.toLocaleString()}`} />
-                <Bar dataKey="sales" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+        {/* Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Sales Trend Chart */}
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow">
+            <h3 className="text-lg md:text-xl font-semibold mb-4">Sales Trend</h3>
+            <div className="h-64 md:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `KSh ${value.toLocaleString()}`} />
+                  <Bar dataKey="sales" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Product Category Donut Chart */}
+          <div className="bg-white p-4 md:p-6 rounded-lg shadow">
+            <h3 className="text-lg md:text-xl font-semibold mb-4">Product Category Distribution</h3>
+            <div className="h-64 md:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={productCategoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {productCategoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name, props) => [
+                      `${value} (${props.payload.percentage}%)`,
+                      name
+                    ]}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
